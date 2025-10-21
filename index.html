@@ -2975,8 +2975,10 @@
                         intro.style.display = 'none';
                         circleTransition.style.display = 'none';
                         heroSection.classList.add('animate-content');
-                        // Start ambient music immediately after transition
+
+                        // Start ambient music after circle transition
                         startAmbientOnInteraction();
+
                         setTimeout(() => {
                             initButterflyAnimation();
                         }, 2500);
@@ -3122,26 +3124,7 @@
                 });
             }
 
-            document.getElementById('restartButton').addEventListener('click', () => {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            });
-
-            document.getElementById('shareButton').addEventListener('click', async () => {
-                const shareData = {
-                    title: 'Happy Birthday มิมิว!',
-                    text: 'เว็บอวยพรวันเกิดสุดพิเศษ ลองเข้ามาดูสิ!',
-                    url: window.location.href
-                };
-                try {
-                    if (navigator.share) {
-                        await navigator.share(shareData);
-                    } else {
-                        alert('เปิดฟังก์ชันแชร์ไม่ได้ ลองคัดลอกลิงก์แทนนะ!');
-                    }
-                } catch (err) {
-                    console.error("Share failed:", err);
-                }
-            });
+            // Removed restart and share buttons (closing section was removed)
 
             // Gallery Reveal Animation
             const momentsSection = document.getElementById('moments');
@@ -3536,10 +3519,13 @@
             try {
                 ambientAudio = new Audio('assets/audio/ambient.mp3');
                 ambientAudio.loop = true;
-                ambientAudio.volume = 0.3;
-                ambientAudio.play().catch(e => console.log('Audio play failed:', e));
+                ambientAudio.volume = 0.5;
+                console.log('Attempting to play ambient music...');
+                ambientAudio.play()
+                    .then(() => console.log('Ambient music playing!'))
+                    .catch(e => console.log('Audio play failed:', e));
             } catch (e) {
-                console.log('Ambient audio not available');
+                console.log('Ambient audio not available:', e);
             }
         }
 
