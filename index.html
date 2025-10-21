@@ -1953,6 +1953,8 @@
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
         }
 
         .card {
@@ -2417,10 +2419,16 @@
         }
 
         #confetti-container {
-            position: absolute;
+            position: fixed;
             inset: 0;
             pointer-events: none;
             overflow: hidden;
+            z-index: 9999;
+            display: none;
+        }
+
+        #confetti-container.active {
+            display: block;
         }
 
         .confetti {
@@ -2941,6 +2949,7 @@
 
     </main>
 
+    <div id="confetti-container"></div>
     <canvas id="butterfly-canvas"></canvas>
 
     <script>
@@ -3106,6 +3115,10 @@
                     giftContent.style.display = 'block';
                     this.style.display = 'none';
                     const container = document.getElementById('confetti-container');
+
+                    // Show confetti container
+                    container.classList.add('active');
+
                     for (let i = 0; i < 50; i++) {
                         const confetti = document.createElement('div');
                         confetti.classList.add('confetti');
@@ -3115,12 +3128,20 @@
                         confetti.style.animation = `fall ${2 + Math.random() * 2}s linear ${Math.random() * 2}s forwards`;
                         container.appendChild(confetti);
                     }
+
                     if (!document.getElementById('confetti-style')) {
                         const style = document.createElement('style');
                         style.id = 'confetti-style';
                         style.innerHTML = `@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 1; } }`;
                         document.head.appendChild(style);
                     }
+
+                    // Hide confetti after animation completes (4 seconds max)
+                    setTimeout(() => {
+                        container.classList.remove('active');
+                        // Clear confetti elements
+                        container.innerHTML = '';
+                    }, 5000);
                 });
             }
 
@@ -3278,12 +3299,25 @@
                         console.log('Audio play failed:', err);
                     });
 
-                    // Start fireworks using external library
+                    // Resume ambient music after birthday song ends
+                    birthdayAudio.addEventListener('ended', function () {
+                        if (window.ambientAudio) {
+                            window.ambientAudio.currentTime = 0;
+                            window.ambientAudio.play().catch(err => {
+                                console.log('Ambient audio resume failed:', err);
+                            });
+                        }
+                    }, { once: true });
+
+                    // Start fireworks using external library - only in birthday card section
+                    const birthdaySection = document.getElementById('birthday-card');
                     const fireworkFrame = document.createElement('iframe');
                     fireworkFrame.src = 'firework-simulator-v2/dist/index.html';
-                    fireworkFrame.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none;z-index:5;';
+                    fireworkFrame.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;border:none;pointer-events:none;z-index:1;';
                     fireworkFrame.id = 'fireworkFrame';
-                    document.body.appendChild(fireworkFrame);
+                    birthdaySection.appendChild(fireworkFrame);
+
+                    // Keep fireworks running continuously (no timeout to remove)
 
                     // Fade out card after 1 minute
                     setTimeout(() => {
@@ -3503,7 +3537,7 @@
         }
 
         // Ambient Music Function
-        let ambientAudio = null;
+        window.ambientAudio = null;
         let ambientStarted = false;
 
         function playAmbientMusic() {
@@ -3517,11 +3551,11 @@
             ambientStarted = true;
 
             try {
-                ambientAudio = new Audio('assets/audio/ambient.mp3');
-                ambientAudio.loop = true;
-                ambientAudio.volume = 0.5;
+                window.ambientAudio = new Audio('assets/audio/ambient.mp3');
+                window.ambientAudio.loop = true;
+                window.ambientAudio.volume = 0.5;
                 console.log('Attempting to play ambient music...');
-                ambientAudio.play()
+                window.ambientAudio.play()
                     .then(() => console.log('Ambient music playing!'))
                     .catch(e => console.log('Audio play failed:', e));
             } catch (e) {
