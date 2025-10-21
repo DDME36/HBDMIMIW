@@ -70,9 +70,147 @@
             inset: 0;
             background: #000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             z-index: 3000;
+            gap: 30px;
+        }
+
+        .sound-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: none;
+            z-index: 3001;
+        }
+
+        .sound-button.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .sound-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .sound-button.enabled {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        }
+
+        /* Audio Permission Modal */
+        .audio-permission-modal {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3500;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .audio-permission-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .audio-permission-modal::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+            backdrop-filter: blur(5px);
+        }
+
+        .audio-permission-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.5s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .audio-permission-content h2 {
+            color: white;
+            font-family: 'Mali', 'Sarabun', sans-serif;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .audio-permission-content p {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Sarabun', sans-serif;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .audio-permission-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .audio-permission-buttons button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: 'Sarabun', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .audio-permission-buttons .allow-btn {
+            background: white;
+            color: #667eea;
+        }
+
+        .audio-permission-buttons .allow-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .audio-permission-buttons .deny-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .audio-permission-buttons .deny-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Flip Clock */
@@ -2592,6 +2730,18 @@
 
 <body>
 
+    <!-- Audio Permission Modal -->
+    <div class="audio-permission-modal" id="audioPermissionModal">
+        <div class="audio-permission-content">
+            <h2>🎵 ยินดีต้อนรับ</h2>
+            <p>เว็บไซต์นี้มีเสียงประกอบ<br>คุณต้องการเปิดเสียงหรือไม่?</p>
+            <div class="audio-permission-buttons">
+                <button class="allow-btn" id="allowAudioBtn">🔊 เปิดเสียง</button>
+                <button class="deny-btn" id="denyAudioBtn">🔇 ไม่เปิด</button>
+            </div>
+        </div>
+    </div>
+
     <div class="intro-screen" id="intro">
         <div class="flip-clock" id="flipClock">
             <div class="flip" id="dayTens">
@@ -2640,6 +2790,7 @@
                 <div class="flip-number">8</div>
             </div>
         </div>
+        <button class="sound-button" id="soundButton">🔊 เปิดเสียง</button>
     </div>
 
     <div class="circle-transition" id="circleTransition"></div>
@@ -2953,6 +3104,9 @@
     <canvas id="butterfly-canvas"></canvas>
 
     <script>
+        // Global audio state
+        let audioEnabled = false;
+
         document.addEventListener('DOMContentLoaded', () => {
             let completed = false;
             const intro = document.getElementById('intro');
@@ -2961,6 +3115,93 @@
             const mainContent = document.getElementById('mainContent');
             const heroSection = document.getElementById('hero');
             const startButton = document.getElementById('startButton');
+            const audioPermissionModal = document.getElementById('audioPermissionModal');
+            const allowAudioBtn = document.getElementById('allowAudioBtn');
+            const denyAudioBtn = document.getElementById('denyAudioBtn');
+            const soundButton = document.getElementById('soundButton');
+
+            // Show flip clock immediately (but don't animate yet)
+            setTimeout(() => {
+                flipClock.classList.add('show');
+            }, 500);
+
+            // Function to start all animations after user responds
+            function startAllAnimations() {
+                console.log('Starting all animations...');
+
+                // Flip animation - start after 1 second
+                setTimeout(() => {
+                    console.log('Starting flip animation...');
+                    const dayOnesFlip = document.getElementById('dayOnes');
+                    if (dayOnesFlip) {
+                        const firstLi = dayOnesFlip.querySelector('li:first-child');
+                        const secondLi = dayOnesFlip.querySelector('li:last-child');
+                        if (firstLi && secondLi) {
+                            firstLi.classList.add('before');
+                            secondLi.classList.add('active');
+                            document.body.classList.add('play');
+                            console.log('Flip animation started!');
+                        }
+                    }
+                }, 1000);
+
+                // Auto transition after 3.5 seconds (flip takes 0.5s, wait 2s after)
+                setTimeout(() => {
+                    console.log('Starting transition...');
+                    startTransition();
+                }, 3500);
+            }
+
+            // Show audio permission modal immediately
+            setTimeout(() => {
+                audioPermissionModal.classList.add('show');
+            }, 1000);
+
+            // Handle allow audio
+            allowAudioBtn.addEventListener('click', () => {
+                audioEnabled = true;
+                audioPermissionModal.classList.remove('show');
+                soundButton.classList.add('show', 'enabled');
+                soundButton.textContent = '🔊 เสียงเปิดอยู่';
+                console.log('Audio enabled by user');
+                // Start ambient music
+                startAmbientOnInteraction();
+                // Start animations after user responds
+                startAllAnimations();
+            });
+
+            // Handle deny audio
+            denyAudioBtn.addEventListener('click', () => {
+                audioEnabled = false;
+                audioPermissionModal.classList.remove('show');
+                soundButton.classList.add('show');
+                soundButton.textContent = '🔇 เสียงปิดอยู่';
+                console.log('Audio disabled by user');
+                // Start animations after user responds
+                startAllAnimations();
+            });
+
+            // Toggle sound button
+            soundButton.addEventListener('click', () => {
+                audioEnabled = !audioEnabled;
+                if (audioEnabled) {
+                    soundButton.classList.add('enabled');
+                    soundButton.textContent = '🔊 เสียงเปิดอยู่';
+                    // Start ambient if not started yet
+                    if (!window.ambientAudio) {
+                        startAmbientOnInteraction();
+                    } else if (window.ambientAudio.paused) {
+                        window.ambientAudio.play().catch(e => console.log('Audio play failed:', e));
+                    }
+                } else {
+                    soundButton.classList.remove('enabled');
+                    soundButton.textContent = '🔇 เสียงปิดอยู่';
+                    // Pause ambient
+                    if (window.ambientAudio && !window.ambientAudio.paused) {
+                        window.ambientAudio.pause();
+                    }
+                }
+            });
 
             if (startButton) {
                 // Split by words instead of characters for Thai text
@@ -2984,9 +3225,6 @@
                         intro.style.display = 'none';
                         circleTransition.style.display = 'none';
                         heroSection.classList.add('animate-content');
-
-                        // Start ambient music after circle transition
-                        startAmbientOnInteraction();
 
                         setTimeout(() => {
                             initButterflyAnimation();
@@ -3016,23 +3254,8 @@
                 }, 800);
             };
 
-            setTimeout(() => { flipClock.classList.add('show'); }, 500);
-
-            setTimeout(() => {
-                const dayOnesFlip = document.getElementById('dayOnes');
-                if (dayOnesFlip) {
-                    const firstLi = dayOnesFlip.querySelector('li:first-child');
-                    const secondLi = dayOnesFlip.querySelector('li:last-child');
-                    if (firstLi && secondLi) {
-                        firstLi.classList.add('before');
-                        secondLi.classList.add('active');
-                        document.body.classList.add('play');
-                    }
-                }
-            }, 2500);
-
-            setTimeout(startTransition, 4000);
-            document.body.addEventListener('click', startTransition);
+            // Animations will start after user responds to audio permission modal
+            // (moved to startAllAnimations function)
 
             // --- Interaction Logic ---
 
@@ -3554,10 +3777,16 @@
                 window.ambientAudio = new Audio('assets/audio/ambient.mp3');
                 window.ambientAudio.loop = true;
                 window.ambientAudio.volume = 0.5;
-                console.log('Attempting to play ambient music...');
-                window.ambientAudio.play()
-                    .then(() => console.log('Ambient music playing!'))
-                    .catch(e => console.log('Audio play failed:', e));
+
+                // Only play if audio is enabled
+                if (audioEnabled) {
+                    console.log('Attempting to play ambient music...');
+                    window.ambientAudio.play()
+                        .then(() => console.log('Ambient music playing!'))
+                        .catch(e => console.log('Audio play failed:', e));
+                } else {
+                    console.log('Ambient music loaded but not playing (audio disabled)');
+                }
             } catch (e) {
                 console.log('Ambient audio not available:', e);
             }
