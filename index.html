@@ -2868,55 +2868,93 @@
                 font-size: 1rem !important;
             }
 
-            /* Fix MIMIW PHROM text rendering for Safari - disable liquid effect on mobile */
-            .rewind-item-3 .liquid-canvas {
+            /* Replace MIMIW PHROM with gradient text for iPad/Safari */
+            .rewind-item-3 .liquid-canvas,
+            .rewind-item-3 .liquid-mask {
                 display: none !important;
             }
 
-            .liquid-mask {
-                background: white !important;
-                mix-blend-mode: normal !important;
-            }
-
-            .liquid-mask text {
-                font-size: 2rem !important;
-                fill: black !important;
-                -webkit-text-fill-color: black !important;
-                opacity: 1 !important;
-                font-weight: 900 !important;
-            }
-
-            .liquid-mask svg {
-                width: 100% !important;
-                height: 100% !important;
-                opacity: 1 !important;
-            }
-
-            /* Force text to render properly on Safari */
             .rewind-item-3 {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-family: 'FCKrungThep-Black', 'Mali', sans-serif !important;
+                font-size: 2rem !important;
+                font-weight: 900 !important;
+                color: white !important;
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3) !important;
                 -webkit-transform: translateZ(0);
                 transform: translateZ(0);
-                background: white !important;
             }
 
-            /* Fix LOVE loader size and rendering */
+            .rewind-item-3::before {
+                content: 'MIMIW' !important;
+                display: block !important;
+                animation: textPulse 2s ease-in-out infinite !important;
+            }
+
+            @keyframes textPulse {
+                0%, 100% {
+                    transform: scale(1);
+                    opacity: 1;
+                }
+                50% {
+                    transform: scale(1.05);
+                    opacity: 0.9;
+                }
+            }
+
+            /* Fix LOVE loader size and rendering - ensure full display */
             .love-loader {
-                gap: 0.2em !important;
+                gap: 0.25em !important;
+                padding: 5px !important;
             }
 
             .love-loader svg {
-                width: 28px !important;
-                height: 28px !important;
+                width: 30px !important;
+                height: 30px !important;
+                display: block !important;
             }
 
-            /* Fix loader size */
+            .love-loader svg path {
+                stroke-width: 10 !important;
+            }
+
+            /* Fix colorful spinning loader (rewind-item-7) - ensure full display */
+            .rewind-item-7 {
+                overflow: visible !important;
+                padding: 10px !important;
+            }
+
             .loader {
-                transform: scale(0.6) !important;
+                transform: scale(0.7) !important;
+                padding: 0 !important;
+                margin: 0 auto !important;
+                display: block !important;
+                position: relative !important;
             }
 
-            .loader svg {
-                width: 80px !important;
-                height: 80px !important;
+            .loader::before {
+                width: 90px !important;
+                height: 90px !important;
+                display: block !important;
+            }
+
+            .loader .box {
+                width: 90px !important;
+                height: 90px !important;
+                display: block !important;
+                animation: spin 2s linear infinite !important;
+            }
+
+            @keyframes spin {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
             }
 
             /* Fix birthday card */
@@ -2943,37 +2981,43 @@
                 transform: none !important;
             }
 
-            /* Fix moments section carousel for iPad - simpler layout */
+            /* Fix moments section carousel for iPad - move up and adjust size */
             #moments {
-                padding: 80px 0 40px !important;
+                padding: 100px 0 60px !important;
                 min-height: auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-start !important;
             }
 
             #moments h2 {
-                margin-bottom: 20px !important;
+                margin-bottom: 15px !important;
+                margin-top: 0 !important;
             }
 
             #moments p {
-                margin-bottom: 30px !important;
+                margin-bottom: 40px !important;
             }
 
             .cover-flow {
-                padding: 2rem 0 !important;
+                padding: 3rem 0 !important;
                 perspective: 80rem !important;
+                margin-top: -20px !important;
             }
 
             .cover-flow__cover {
-                width: clamp(180px, 45vw, 280px) !important;
-                margin: 0 auto 20px !important;
-                max-height: 350px !important;
+                width: clamp(160px, 40vw, 260px) !important;
+                margin: 0 auto 25px !important;
+                max-height: 320px !important;
             }
 
             .cover-flow__track {
-                gap: 4rem !important;
+                gap: 5rem !important;
+                padding-top: 2rem !important;
             }
 
             .cover-flow__space {
-                margin-bottom: 2rem !important;
+                margin-bottom: 3rem !important;
             }
 
             /* Simplify carousel animation for Safari */
@@ -3497,7 +3541,7 @@
             function startAllAnimations() {
                 console.log('Starting all animations...');
 
-                // Flip animation - start after 1 second
+                // Flip animation - start after 0.8 second
                 setTimeout(() => {
                     console.log('Starting flip animation...');
                     const dayOnesFlip = document.getElementById('dayOnes');
@@ -3511,13 +3555,13 @@
                             console.log('Flip animation started!');
                         }
                     }
-                }, 1000);
+                }, 800);
 
-                // Auto transition after 3.5 seconds (flip takes 0.5s, wait 2s after)
+                // Auto transition after 2.3 seconds (flip takes 0.5s, wait 1s after) - faster for iPad
                 setTimeout(() => {
                     console.log('Starting transition...');
                     startTransition();
-                }, 3500);
+                }, 2300);
             }
 
             // Show audio permission modal immediately
