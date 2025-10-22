@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <title>Happy Birthday มิมิว</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
@@ -2724,6 +2726,194 @@
 
         button#startButton div span:nth-child(8) {
             transition-delay: 0.4s;
+        }
+
+        /* Mobile & Tablet Responsive */
+        @media screen and (max-width: 1024px) {
+
+            /* Fix intro screen layout */
+            .intro-screen {
+                padding: 20px !important;
+                justify-content: center !important;
+                align-items: center !important;
+            }
+
+            /* Fix flip clock container */
+            .flip-clock {
+                margin: 0 auto !important;
+                justify-content: center !important;
+                align-items: center !important;
+                width: 100% !important;
+                max-width: 400px !important;
+            }
+
+            /* Reduce font sizes for mobile */
+            .hero h1 {
+                font-size: clamp(28px, 6vw, 64px) !important;
+            }
+
+            .hero p {
+                font-size: clamp(14px, 2.5vw, 20px) !important;
+            }
+
+            .page h2 {
+                font-size: clamp(24px, 5vw, 42px) !important;
+            }
+
+            /* Fix flip clock size */
+            .flip {
+                width: 45px !important;
+                height: 65px !important;
+            }
+
+            .flip-number {
+                font-size: 48px !important;
+            }
+
+            ul.fancy-flip {
+                width: 45px !important;
+                height: 65px !important;
+                font-size: 48px !important;
+                line-height: 65px !important;
+            }
+
+            .separator {
+                width: 12px !important;
+                font-size: 32px !important;
+            }
+
+            /* Fix audio permission modal */
+            .audio-permission-content {
+                max-width: 90% !important;
+                padding: 30px 20px !important;
+            }
+
+            .audio-permission-content h2 {
+                font-size: 22px !important;
+            }
+
+            .audio-permission-content p {
+                font-size: 14px !important;
+            }
+
+            .audio-permission-buttons button {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+            }
+
+            /* Fix sound button */
+            .sound-button {
+                top: 15px !important;
+                right: 15px !important;
+                padding: 10px 20px !important;
+                font-size: 14px !important;
+            }
+
+            /* Fix rewind bento grid */
+            .rewind-bento-grid {
+                max-width: 95vw !important;
+                height: 60vh !important;
+                max-height: 500px !important;
+                gap: 0.75rem !important;
+            }
+
+            .rewind-bento-item {
+                padding: 15px !important;
+                font-size: 1rem !important;
+            }
+
+            /* Fix birthday card */
+            .card {
+                max-width: 90vw !important;
+            }
+
+            /* Optimize animations for mobile */
+            * {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
+            }
+
+            /* Disable some heavy animations on mobile */
+            .floating-heart,
+            .floating-star,
+            .floating-flower {
+                animation-duration: 10s !important;
+            }
+        }
+
+        /* Extra small devices (phones) */
+        @media screen and (max-width: 480px) {
+            .hero h1 {
+                font-size: clamp(24px, 8vw, 48px) !important;
+            }
+
+            .flip {
+                width: 35px !important;
+                height: 50px !important;
+            }
+
+            .flip-number {
+                font-size: 36px !important;
+            }
+
+            ul.fancy-flip {
+                width: 35px !important;
+                height: 50px !important;
+                font-size: 36px !important;
+                line-height: 50px !important;
+            }
+
+            .rewind-bento-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                grid-template-rows: repeat(6, 1fr) !important;
+                height: 70vh !important;
+            }
+
+            .rewind-item-0 {
+                grid-column: 1 !important;
+                grid-row: 1 / span 2 !important;
+            }
+
+            .rewind-item-1 {
+                grid-column: 2 !important;
+                grid-row: 1 / span 2 !important;
+            }
+
+            .rewind-item-2 {
+                grid-column: 1 !important;
+                grid-row: 3 / span 2 !important;
+            }
+
+            .rewind-item-3 {
+                grid-column: 2 !important;
+                grid-row: 3 !important;
+            }
+
+            .rewind-item-4 {
+                grid-column: 2 !important;
+                grid-row: 4 !important;
+            }
+
+            .rewind-item-5 {
+                grid-column: 1 !important;
+                grid-row: 5 / span 2 !important;
+            }
+
+            .rewind-item-6 {
+                grid-column: 2 !important;
+                grid-row: 5 !important;
+            }
+
+            .rewind-item-7 {
+                grid-column: 2 !important;
+                grid-row: 6 !important;
+            }
+
+            .rewind-item-8 {
+                display: none !important;
+            }
         }
     </style>
 </head>
