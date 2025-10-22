@@ -2777,11 +2777,36 @@
                 line-height: 65px !important;
             }
 
-            /* Fix flip clock opacity issue on iPad */
+            /* Fix flip clock opacity issue on iPad/Safari */
             ul.fancy-flip li a div div.inn {
                 opacity: 1 !important;
                 -webkit-backface-visibility: visible !important;
                 backface-visibility: visible !important;
+            }
+
+            /* Prevent flip animation from reversing on Safari */
+            body.play ul.fancy-flip li.active,
+            body.play ul.fancy-flip li.before {
+                animation-fill-mode: forwards !important;
+                -webkit-animation-fill-mode: forwards !important;
+            }
+
+            body.play ul.fancy-flip li.active .down,
+            body.play ul.fancy-flip li.before .up {
+                animation-fill-mode: forwards !important;
+                -webkit-animation-fill-mode: forwards !important;
+            }
+
+            /* Keep final state after animation */
+            ul.fancy-flip li.active {
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+
+            ul.fancy-flip li.before {
+                opacity: 0 !important;
+                visibility: hidden !important;
+                pointer-events: none !important;
             }
 
             .separator {
@@ -2830,22 +2855,44 @@
                 font-size: 1rem !important;
             }
 
-            /* Fix MIMIW PHROM text rendering */
+            /* Fix MIMIW PHROM text rendering for Safari */
             .liquid-mask text {
-                font-size: 3rem !important;
-                -webkit-text-stroke: 1px black;
-                paint-order: stroke fill;
+                font-size: 2.5rem !important;
+                fill: black !important;
+                -webkit-text-fill-color: black !important;
+                opacity: 1 !important;
             }
 
-            /* Fix LOVE loader size */
+            .liquid-mask svg {
+                width: 100% !important;
+                height: 100% !important;
+                opacity: 1 !important;
+            }
+
+            /* Force text to render properly on Safari */
+            .rewind-item-3 {
+                -webkit-transform: translateZ(0);
+                transform: translateZ(0);
+            }
+
+            /* Fix LOVE loader size and rendering */
+            .love-loader {
+                gap: 0.2em !important;
+            }
+
             .love-loader svg {
-                width: 32px !important;
-                height: 32px !important;
+                width: 28px !important;
+                height: 28px !important;
             }
 
             /* Fix loader size */
             .loader {
-                transform: scale(0.7) !important;
+                transform: scale(0.6) !important;
+            }
+
+            .loader svg {
+                width: 80px !important;
+                height: 80px !important;
             }
 
             /* Fix birthday card */
@@ -2872,10 +2919,51 @@
                 transform: none !important;
             }
 
-            /* Fix moments section images */
+            /* Fix moments section carousel for iPad */
+            #moments {
+                padding: 60px 0 !important;
+            }
+
+            .cover-flow {
+                padding: 1rem 0 !important;
+            }
+
             .cover-flow__cover {
-                width: clamp(240px, 70vw, 350px) !important;
-                margin-bottom: 20px !important;
+                width: clamp(200px, 50vw, 300px) !important;
+                margin: 0 auto 15px !important;
+                max-height: 400px !important;
+            }
+
+            .cover-flow__track {
+                gap: 3rem !important;
+            }
+
+            /* Adjust carousel animation for Safari */
+            @keyframes cover {
+                0% {
+                    transform: translateY(-30%) rotateX(35deg) !important;
+                    opacity: 0.6 !important;
+                }
+
+                35% {
+                    transform: translateY(0) rotateX(35deg) !important;
+                    opacity: 1 !important;
+                }
+
+                50% {
+                    box-shadow: 0 0 1rem .5rem rgba(0, 0, 0, 0.15) !important;
+                    transform: rotateX(0deg) translateZ(5em) scale(1.05) !important;
+                }
+
+                65% {
+                    transform: translateY(0) rotateX(-35deg) !important;
+                    opacity: 1 !important;
+                }
+
+                100% {
+                    transform: translateY(30%) rotateX(-35deg) !important;
+                    opacity: 0.6 !important;
+                }
             }
 
             /* Optimize animations for mobile */
