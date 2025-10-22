@@ -2797,16 +2797,29 @@
                 -webkit-animation-fill-mode: forwards !important;
             }
 
-            /* Keep final state after animation */
-            ul.fancy-flip li.active {
+            /* Keep final state after animation - stronger rules for Safari */
+            body.play ul.fancy-flip li.active,
+            body.play ul.fancy-flip li.active * {
                 opacity: 1 !important;
                 visibility: visible !important;
             }
 
-            ul.fancy-flip li.before {
+            body.play ul.fancy-flip li.before,
+            body.play ul.fancy-flip li.before * {
                 opacity: 0 !important;
                 visibility: hidden !important;
                 pointer-events: none !important;
+                display: none !important;
+            }
+
+            /* Force second number to stay visible */
+            body.play ul.fancy-flip li:last-child {
+                z-index: 10 !important;
+                opacity: 1 !important;
+            }
+
+            body.play ul.fancy-flip li:last-child * {
+                opacity: 1 !important;
             }
 
             .separator {
@@ -2855,12 +2868,22 @@
                 font-size: 1rem !important;
             }
 
-            /* Fix MIMIW PHROM text rendering for Safari */
+            /* Fix MIMIW PHROM text rendering for Safari - disable liquid effect on mobile */
+            .rewind-item-3 .liquid-canvas {
+                display: none !important;
+            }
+
+            .liquid-mask {
+                background: white !important;
+                mix-blend-mode: normal !important;
+            }
+
             .liquid-mask text {
-                font-size: 2.5rem !important;
+                font-size: 2rem !important;
                 fill: black !important;
                 -webkit-text-fill-color: black !important;
                 opacity: 1 !important;
+                font-weight: 900 !important;
             }
 
             .liquid-mask svg {
@@ -2873,6 +2896,7 @@
             .rewind-item-3 {
                 -webkit-transform: translateZ(0);
                 transform: translateZ(0);
+                background: white !important;
             }
 
             /* Fix LOVE loader size and rendering */
@@ -2919,50 +2943,65 @@
                 transform: none !important;
             }
 
-            /* Fix moments section carousel for iPad */
+            /* Fix moments section carousel for iPad - simpler layout */
             #moments {
-                padding: 60px 0 !important;
+                padding: 80px 0 40px !important;
+                min-height: auto !important;
+            }
+
+            #moments h2 {
+                margin-bottom: 20px !important;
+            }
+
+            #moments p {
+                margin-bottom: 30px !important;
             }
 
             .cover-flow {
-                padding: 1rem 0 !important;
+                padding: 2rem 0 !important;
+                perspective: 80rem !important;
             }
 
             .cover-flow__cover {
-                width: clamp(200px, 50vw, 300px) !important;
-                margin: 0 auto 15px !important;
-                max-height: 400px !important;
+                width: clamp(180px, 45vw, 280px) !important;
+                margin: 0 auto 20px !important;
+                max-height: 350px !important;
             }
 
             .cover-flow__track {
-                gap: 3rem !important;
+                gap: 4rem !important;
             }
 
-            /* Adjust carousel animation for Safari */
+            .cover-flow__space {
+                margin-bottom: 2rem !important;
+            }
+
+            /* Simplify carousel animation for Safari */
             @keyframes cover {
                 0% {
-                    transform: translateY(-30%) rotateX(35deg) !important;
-                    opacity: 0.6 !important;
+                    transform: translateY(-20%) rotateX(25deg) scale(0.9) !important;
+                    opacity: 0.5 !important;
                 }
 
                 35% {
-                    transform: translateY(0) rotateX(35deg) !important;
-                    opacity: 1 !important;
+                    transform: translateY(0) rotateX(20deg) scale(0.95) !important;
+                    opacity: 0.8 !important;
                 }
 
                 50% {
                     box-shadow: 0 0 1rem .5rem rgba(0, 0, 0, 0.15) !important;
-                    transform: rotateX(0deg) translateZ(5em) scale(1.05) !important;
-                }
-
-                65% {
-                    transform: translateY(0) rotateX(-35deg) !important;
+                    transform: rotateX(0deg) translateZ(3em) scale(1) !important;
                     opacity: 1 !important;
                 }
 
+                65% {
+                    transform: translateY(0) rotateX(-20deg) scale(0.95) !important;
+                    opacity: 0.8 !important;
+                }
+
                 100% {
-                    transform: translateY(30%) rotateX(-35deg) !important;
-                    opacity: 0.6 !important;
+                    transform: translateY(20%) rotateX(-25deg) scale(0.9) !important;
+                    opacity: 0.5 !important;
                 }
             }
 
@@ -3538,8 +3577,16 @@
                 const words = text.split(' ');
                 startButton.innerHTML = '<div>' + words.map(word => '<span>' + word + '</span>').join(' ') + '</div>';
 
-                startButton.addEventListener('click', () => {
-                    document.getElementById('rewind').scrollIntoView({ behavior: 'smooth' });
+                startButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const rewindSection = document.getElementById('rewind');
+                    if (rewindSection) {
+                        // Use setTimeout to ensure smooth scroll on Safari
+                        setTimeout(() => {
+                            rewindSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                    }
                 });
             }
 
