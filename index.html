@@ -2777,6 +2777,13 @@
                 line-height: 65px !important;
             }
 
+            /* Fix flip clock opacity issue on iPad */
+            ul.fancy-flip li a div div.inn {
+                opacity: 1 !important;
+                -webkit-backface-visibility: visible !important;
+                backface-visibility: visible !important;
+            }
+
             .separator {
                 width: 12px !important;
                 font-size: 32px !important;
@@ -2815,6 +2822,7 @@
                 height: 60vh !important;
                 max-height: 500px !important;
                 gap: 0.75rem !important;
+                padding: 20px 10px !important;
             }
 
             .rewind-bento-item {
@@ -2822,9 +2830,52 @@
                 font-size: 1rem !important;
             }
 
+            /* Fix MIMIW PHROM text rendering */
+            .liquid-mask text {
+                font-size: 3rem !important;
+                -webkit-text-stroke: 1px black;
+                paint-order: stroke fill;
+            }
+
+            /* Fix LOVE loader size */
+            .love-loader svg {
+                width: 32px !important;
+                height: 32px !important;
+            }
+
+            /* Fix loader size */
+            .loader {
+                transform: scale(0.7) !important;
+            }
+
             /* Fix birthday card */
             .card {
                 max-width: 90vw !important;
+            }
+
+            /* Fix scroll arrow position */
+            .scroll-down-arrow {
+                bottom: 60px !important;
+            }
+
+            /* Fix image containers */
+            .rewind-bento-item img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+                transform: none !important;
+            }
+
+            .rewind-item-0 img,
+            .rewind-item-1 img,
+            .rewind-item-2 img {
+                transform: none !important;
+            }
+
+            /* Fix moments section images */
+            .cover-flow__cover {
+                width: clamp(240px, 70vw, 350px) !important;
+                margin-bottom: 20px !important;
             }
 
             /* Optimize animations for mobile */
